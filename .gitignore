@@ -1,0 +1,15 @@
+# IDEs
+.idea
+.vscode
+
+# Dependencies
+node_modules
+
+# Production build
+build
+
+# React TypeScript typings file
+react-app-env.d.ts
+
+# Lock file
+package-lock.json

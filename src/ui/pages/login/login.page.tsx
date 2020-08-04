@@ -1,10 +1,10 @@
 import React from 'react';
 import './login.page.css';
 
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, Grid, TextField, Link } from '@material-ui/core';
 
 import { FirebaseRepo } from '../../../firebase';
-import { ROUTE_HOME } from '../../../utils';
+import { ROUTE_HOME, ROUTE_SIGN_UP } from '../../../utils';
 
 interface LoginPageProps {
     history: any;
@@ -75,6 +75,11 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                         >
                             Sign In
                         </Button>
+                    </Grid>
+                    <Grid item xs={12} className="login-page-link">
+                        <Link onClick={() => this.props.history.push(ROUTE_SIGN_UP)}>
+                            <span>No account? Create one</span>
+                        </Link>
                     </Grid>
                 </Grid>
             </div>

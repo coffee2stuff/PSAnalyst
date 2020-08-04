@@ -32,14 +32,14 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     render() {
         return (
             <div>
-                <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justify="center"
-                    style={{ minHeight: '100vh' }}
-                >
+                <Grid container direction="column" alignItems="center" justify="center" style={{ minHeight: '100vh' }}>
+                    <Grid item xs={12}>
+                        <img
+                            src={require('../../../assets/app_icon.png')}
+                            alt="Application icon"
+                            className="login-page-icon"
+                        />
+                    </Grid>
                     <Grid item xs={3}>
                         <TextField
                             margin="normal"

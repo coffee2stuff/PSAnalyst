@@ -1,2 +1,2 @@
 export * from './pair.struct';
-export * from './tuple.struct';
+export * from './triple.struct';

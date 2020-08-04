@@ -25,9 +25,6 @@ export class App extends React.Component<any, any> {
         createMuiTheme({
             palette: {
                 primary: {
-                    main: '#feffea'
-                },
-                secondary: {
                     main: '#094074'
                 }
             }

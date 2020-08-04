@@ -1,4 +1,4 @@
-import { FirebaseProvider } from '../providers';
+import { FirebaseProvider } from '../providers/firebase.provider';
 import { persistLocalStorage, ACCESS_TOKEN } from '../../utils';
 
 interface IFirebaseRepo {
@@ -42,7 +42,7 @@ export class FirebaseRepo implements IFirebaseRepo {
     }
 
     private emailValidation(email: string): boolean {
-        const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return regex.test(email.toLowerCase());
     }
 

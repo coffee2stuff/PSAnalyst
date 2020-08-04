@@ -2,7 +2,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 
-import { firebaseConfig, Pair } from '../utils';
+import { firebaseConfig, Pair } from '../../utils';
 
 export class FirebaseProvider {
     private static instance: FirebaseProvider;
@@ -57,10 +57,6 @@ export class FirebaseProvider {
             console.log(error);
             return undefined;
         }
-    }
-
-    async createDocument<T>(...collectionDocumentPairs: Array<Pair<string, T>>): Promise<string | undefined> {
-        return undefined;
     }
 
     async getDocumentById<T>(collectionDocumentPair: Pair<string, string>): Promise<T | undefined> {

@@ -59,6 +59,10 @@ export class FirebaseProvider {
         }
     }
 
+    async createDocument<T>(...collectionDocumentPairs: Array<Pair<string, T>>): Promise<string | undefined> {
+        return undefined;
+    }
+
     async getDocumentById<T>(collectionDocumentPair: Pair<string, string>): Promise<T | undefined> {
         try {
             const docRef = await this.firestore

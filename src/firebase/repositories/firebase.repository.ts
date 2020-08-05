@@ -1,5 +1,6 @@
-import { FirebaseProvider } from '../providers/firebase.provider';
+import { FirebaseProvider } from '../providers';
 import { persistLocalStorage, ACCESS_TOKEN } from '../../utils';
+import { CurrentUserModel } from '../models';
 
 interface IFirebaseRepo {
     performLogin(email: string, password: string): Promise<boolean>;
@@ -37,16 +38,16 @@ export class FirebaseRepo implements IFirebaseRepo {
         return false;
     }
 
-    private persistAccessToken(token: string) {
-        persistLocalStorage(ACCESS_TOKEN, token);
-    }
+    currentUser = (): CurrentUserModel => this.provider.returnCurrentUser();
 
-    private emailValidation(email: string): boolean {
+    private persistAccessToken = (token: string) => {
+        persistLocalStorage(ACCESS_TOKEN, token);
+    };
+
+    private emailValidation = (email: string): boolean => {
         const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return regex.test(email.toLowerCase());
-    }
+    };
 
-    private isNotEmpty(input: string): boolean {
-        return input.length > 0;
-    }
+    private isNotEmpty = (input: string): boolean => input.length > 0;
 }

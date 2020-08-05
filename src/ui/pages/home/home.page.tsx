@@ -1,6 +1,7 @@
 import React from 'react';
 import './home.page.css';
 import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN } from '../../../utils';
+import { MainNavigationComponent } from '../../components';
 
 interface HomePageProps {
     history: any;
@@ -15,6 +16,10 @@ export class HomePage extends React.Component<HomePageProps, any> {
     }
 
     render() {
-        return <div></div>;
+        return (
+            <div>
+                <MainNavigationComponent />
+            </div>
+        );
     }
 }

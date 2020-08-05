@@ -3,6 +3,7 @@ import 'firebase/auth';
 import 'firebase/firestore';
 
 import { firebaseConfig, Pair } from '../../utils';
+import { CurrentUserModel } from '../models';
 
 export class FirebaseProvider {
     private static instance: FirebaseProvider;
@@ -47,6 +48,16 @@ export class FirebaseProvider {
             console.log(error);
             return undefined;
         }
+    }
+
+    returnCurrentUser(): CurrentUserModel {
+        const user: firebase.User | null = this.auth.currentUser;
+        const displayName: string | null = user !== null ? user.displayName : '';
+        const email: string | null = user !== null ? user.email : '';
+        return {
+            displayName: displayName !== null ? displayName : '',
+            email: email !== null ? email : ''
+        };
     }
 
     async createDocumentRoot<T>(collection: string, document: T): Promise<string | undefined> {

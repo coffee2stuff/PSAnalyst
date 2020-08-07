@@ -2,7 +2,7 @@ import React from 'react';
 import './home.page.css';
 import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN } from '../../../utils';
 import { MainNavigationComponent, MenuListComponent } from '../../components';
-import { Grid, Stepper, Step, StepLabel } from '@material-ui/core';
+import { Grid, Stepper, Step, StepLabel, Typography } from '@material-ui/core';
 
 interface HomePageProps {
     history: any;
@@ -59,6 +59,29 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
                                     );
                                 })}
                             </Stepper>
+                            <Typography variant="h4" style={{ marginTop: '24px' }}>
+                                Welcome!
+                            </Typography>
+                            <Typography variant="body1" style={{ marginTop: '12px' }}>
+                                Welcome to <em>PSAnalyst</em>, a personality analysis tool that enables you to gain
+                                personality insights into your writing using IBM Watson, a state-of-the-art collection
+                                of AI tools ranging from image recognition, speech-to-text, to natural language
+                                processing.
+                            </Typography>
+                            <Typography variant="body1" style={{ marginTop: '8px' }}>
+                                Upload a text file below, which will be sent for processing. Currently, the only file
+                                format that's acceptable is plain TXT, so please make sure you're uploading proper file
+                                type beforehand.
+                            </Typography>
+                            <Typography variant="body1" style={{ marginTop: '8px' }}>
+                                The application is in beta.
+                            </Typography>
+                            <Typography variant="h5" style={{ marginTop: '24px' }}>
+                                File upload
+                            </Typography>
+                            <Typography variant="body1" style={{ marginTop: '12px' }}>
+                                Click on the icon below to begin the upload!
+                            </Typography>
                         </div>
                     </Grid>
                 </Grid>

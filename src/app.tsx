@@ -27,6 +27,9 @@ export class App extends React.Component<any, any> {
             palette: {
                 primary: {
                     main: '#094074'
+                },
+                background: {
+                    default: '#ffffff'
                 }
             }
         });

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import './home.page.css';
 import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN } from '../../../utils';
 import { MainNavigationComponent, MenuListComponent } from '../../components';
 import { Grid, Stepper, Step, StepLabel, Typography, Button } from '@material-ui/core';
+import { FirebaseRepo } from '../../../firebase/repositories';
 
 interface HomePageProps {
     history: any;
@@ -13,9 +14,10 @@ interface HomePageState {
 }
 
 export class HomePage extends React.Component<HomePageProps, HomePageState> {
+    private repository = new FirebaseRepo();
+
     private readonly steps: Array<string> = [
         'Upload text for personality analysis',
-        'Verifying your file before processing starts',
         'Performing personality analysis',
         'View and export results'
     ];
@@ -28,6 +30,7 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
 
         this.handleNextStep = this.handleNextStep.bind(this);
         this.handleBackStep = this.handleBackStep.bind(this);
+        this.handleFileUpload = this.handleFileUpload.bind(this);
 
         if (retrieveFromLocalStorage(ACCESS_TOKEN) === null) {
             this.props.history.push(ROUTE_LOGIN);
@@ -97,9 +100,21 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
                                 Upload file by clicking the button below. Before the analysis begins, your document will
                                 be checked locally for appropriate size, number of words, etc.
                             </Typography>
-                            <Button style={{ marginTop: '24px', background: '#094074' }}>
-                                <span style={{ color: '#ffffff' }}>Upload file</span>
-                            </Button>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                accept="text/plain"
+                                style={{ display: 'none' }}
+                                onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFileUpload(event)}
+                            />
+                            <label htmlFor="file-upload">
+                                <Button
+                                    style={{ marginTop: '24px', background: '#094074', color: '#ffffff' }}
+                                    component="span"
+                                >
+                                    Upload file
+                                </Button>
+                            </label>
                         </div>
                     </Grid>
                 </Grid>
@@ -107,6 +122,29 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
         );
     }
 
-    private handleNextStep = (currentIndex: number) => this.setState({ activeStepIndex: currentIndex + 1 });
+    private readonly handleNextStep = (currentIndex: number) => this.setState({ activeStepIndex: currentIndex + 1 });
     private handleBackStep = (currentIndex: number) => this.setState({ activeStepIndex: currentIndex - 1 });
+
+    private readonly handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files: FileList | null = event.target.files;
+        if (files !== null) {
+            const selectedFile: File = files[0];
+            const selectedFileContents: string = await selectedFile.text();
+            const documentID: string | undefined = await this.repository.uploadFileForProcessing({
+                userID: retrieveFromLocalStorage(ACCESS_TOKEN) ?? '',
+                fileName: selectedFile.name,
+                size: selectedFile.size,
+                isAdequateForAnalysis: this.analyzeFileContents(selectedFileContents),
+                contents: selectedFileContents
+            });
+            if (documentID !== undefined) {
+                this.handleNextStep(this.state.activeStepIndex);
+            }
+        }
+    };
+
+    private analyzeFileContents = (fileContents: string): boolean => {
+        const length: number = fileContents.split(' ').length;
+        return length >= 1200 && length <= 3000;
+    };
 }

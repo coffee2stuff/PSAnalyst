@@ -1,6 +1,6 @@
 import { FirebaseProvider } from '../providers';
 import { persistLocalStorage, ACCESS_TOKEN } from '../../utils';
-import { CurrentUserModel } from '../models';
+import { CurrentUserModel, FileModel } from '../models';
 
 interface IFirebaseRepo {
     performLogin(email: string, password: string): Promise<boolean>;
@@ -39,6 +39,10 @@ export class FirebaseRepo implements IFirebaseRepo {
     }
 
     currentUser = (): CurrentUserModel => this.provider.returnCurrentUser();
+
+    async uploadFileForProcessing(file: FileModel) {
+        return await this.provider.createDocumentRoot(file.userID, file);
+    }
 
     private persistAccessToken = (token: string) => {
         persistLocalStorage(ACCESS_TOKEN, token);

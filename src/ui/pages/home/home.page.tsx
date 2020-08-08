@@ -2,8 +2,9 @@ import React, { ChangeEvent } from 'react';
 import './home.page.css';
 import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN } from '../../../utils';
 import { MainNavigationComponent, MenuListComponent } from '../../components';
-import { Grid, Stepper, Step, StepLabel, Typography, Button } from '@material-ui/core';
+import { Grid, Stepper, Step, StepLabel, Typography, Button, CircularProgress } from '@material-ui/core';
 import { FirebaseRepo } from '../../../firebase/repositories';
+import { FileModel } from '../../../firebase/models';
 
 interface HomePageProps {
     history: any;
@@ -11,6 +12,7 @@ interface HomePageProps {
 
 interface HomePageState {
     activeStepIndex: number;
+    file: FileModel;
 }
 
 export class HomePage extends React.Component<HomePageProps, HomePageState> {
@@ -25,7 +27,8 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
     constructor(props: HomePageProps) {
         super(props);
         this.state = {
-            activeStepIndex: 0
+            activeStepIndex: 0,
+            file: { userID: '', fileName: '', size: 0, isAdequateForAnalysis: false, contents: '' }
         };
 
         this.handleNextStep = this.handleNextStep.bind(this);
@@ -100,21 +103,38 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
                                 Upload file by clicking the button below. Before the analysis begins, your document will
                                 be checked locally for appropriate size, number of words, etc.
                             </Typography>
-                            <input
-                                id="file-upload"
-                                type="file"
-                                accept="text/plain"
-                                style={{ display: 'none' }}
-                                onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFileUpload(event)}
-                            />
-                            <label htmlFor="file-upload">
-                                <Button
-                                    style={{ marginTop: '24px', background: '#094074', color: '#ffffff' }}
-                                    component="span"
-                                >
-                                    Upload file
-                                </Button>
-                            </label>
+                            <div style={{ marginTop: '24px' }}>
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    accept="text/plain"
+                                    style={{ display: 'none' }}
+                                    onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFileUpload(event)}
+                                />
+                                <label htmlFor="file-upload">
+                                    <Button style={{ background: '#094074', color: '#ffffff' }} component="span">
+                                        Upload file
+                                    </Button>
+                                </label>
+                            </div>
+                            {this.state.activeStepIndex === 1 ? (
+                                <div>
+                                    <div style={{ margin: '24px 0 16px 0' }}>
+                                        <CircularProgress />
+                                    </div>
+                                    <span>
+                                        Uploading file {this.state.file.fileName}, size (in bytes){' '}
+                                        {this.state.file.size}, which{' '}
+                                        {this.state.file.isAdequateForAnalysis
+                                            ? `will most likely produce good results (number of words: ${
+                                                  this.state.file.contents.split(' ').length
+                                              })`
+                                            : 'might not be able to produce sufficient memory profile (due to short length)'}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div />
+                            )}
                         </div>
                     </Grid>
                 </Grid>
@@ -130,13 +150,15 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
         if (files !== null) {
             const selectedFile: File = files[0];
             const selectedFileContents: string = await selectedFile.text();
-            const documentID: string | undefined = await this.repository.uploadFileForProcessing({
+            const file: FileModel = {
                 userID: retrieveFromLocalStorage(ACCESS_TOKEN) ?? '',
                 fileName: selectedFile.name,
                 size: selectedFile.size,
                 isAdequateForAnalysis: this.analyzeFileContents(selectedFileContents),
                 contents: selectedFileContents
-            });
+            };
+            this.setState({ file: file });
+            const documentID: string | undefined = await this.repository.uploadFileForProcessing(file);
             if (documentID !== undefined) {
                 this.handleNextStep(this.state.activeStepIndex);
             }

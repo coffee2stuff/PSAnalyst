@@ -1,6 +1,7 @@
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/remote-config';
 
 import { firebaseConfig, Pair } from '../../utils';
 import { CurrentUserModel } from '../models';
@@ -18,11 +19,19 @@ export class FirebaseProvider {
     private readonly app: firebase.app.App;
     private readonly auth: firebase.auth.Auth;
     private readonly firestore: firebase.firestore.Firestore;
+    private readonly remoteConfig: firebase.remoteConfig.RemoteConfig;
+    private readonly fetchTimeout: number = 3600000;
 
     private constructor() {
         this.app = firebase.initializeApp(firebaseConfig);
         this.auth = this.app.auth();
         this.firestore = this.app.firestore();
+        this.remoteConfig = this.app.remoteConfig();
+        this.remoteConfig.settings = {
+            fetchTimeoutMillis: Math.floor(1.5 * this.fetchTimeout),
+            minimumFetchIntervalMillis: this.fetchTimeout
+        };
+        this.remoteConfig.fetchAndActivate().then(() => console.log('Remote Config active'));
     }
 
     async loginWithEmailAndPassword(email: string, password: string): Promise<string | undefined> {
@@ -113,5 +122,9 @@ export class FirebaseProvider {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    fetchRemoteConfigParameter(key: string): string {
+        return this.remoteConfig.getString(key);
     }
 }

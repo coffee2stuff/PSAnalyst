@@ -1,5 +1,5 @@
 import { FirebaseProvider } from '../providers';
-import { persistLocalStorage, ACCESS_TOKEN } from '../../utils';
+import { persistLocalStorage, ACCESS_TOKEN, Pair } from '../../utils';
 import { CurrentUserModel, FileModel } from '../models';
 
 interface IFirebaseRepo {
@@ -42,6 +42,13 @@ export class FirebaseRepo implements IFirebaseRepo {
 
     async uploadFileForProcessing(file: FileModel) {
         return await this.provider.createDocumentRoot(file.userID, file);
+    }
+
+    retrieveIBMCredentials(): Pair<string, string> {
+        return new Pair<string, string>(
+            this.provider.fetchRemoteConfigParameter('ibm_access_token'),
+            this.provider.fetchRemoteConfigParameter('ibm_base_url')
+        );
     }
 
     private persistAccessToken = (token: string) => {

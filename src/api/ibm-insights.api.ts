@@ -23,8 +23,7 @@ export class IBMInsightsLite {
                 },
                 responseType: 'json',
                 headers: {
-                    'Content-Type': 'text/plain',
-                    'Access-Control-Allow-Origin': '*'
+                    'Content-Type': 'text/plain'
                 }
             })
         ).data;

@@ -5,7 +5,7 @@ import { MainNavigationComponent, MenuListComponent } from '../../components';
 import { Grid, Stepper, Step, StepLabel, Typography, Button, CircularProgress } from '@material-ui/core';
 import { FirebaseRepo } from '../../../firebase/repositories';
 import { FileModel } from '../../../firebase/models';
-import { ProfileModel } from '../../../api/models';
+import { ProfileModel, TraitModel } from '../../../api/models';
 import { IBMInsightsLite } from '../../../api';
 
 interface HomePageProps {
@@ -62,86 +62,163 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
                         <MenuListComponent />
                     </Grid>
                     <Grid item xs={9}>
-                        <div style={{ marginRight: '24px' }}>
-                            <Stepper activeStep={this.state.activeStepIndex} alternativeLabel>
-                                {this.steps.map((label: string, index: number) => {
-                                    return (
-                                        <Step key={index}>
-                                            <StepLabel>{label}</StepLabel>
-                                        </Step>
-                                    );
-                                })}
-                            </Stepper>
-                            <Typography variant="h4" style={{ marginTop: '24px' }}>
-                                Welcome!
-                            </Typography>
-                            <Typography variant="body1" style={{ marginTop: '12px' }}>
-                                Welcome to <em>PSAnalyst</em>, a personality analysis tool that enables you to gain
-                                personality insights into your writing using IBM Watson, a state-of-the-art collection
-                                of AI tools ranging from image recognition, speech-to-text, to natural language
-                                processing.
-                            </Typography>
-                            <Typography variant="body1" style={{ marginTop: '8px' }}>
-                                Upload a text file below, which will be sent for processing. Currently, the only file
-                                format that's acceptable is plain TXT, so please make sure you're uploading proper file
-                                type beforehand.
-                            </Typography>
-                            <Typography variant="body1" style={{ marginTop: '8px' }}>
-                                The application is in beta.
-                            </Typography>
-                            <Typography variant="h5" style={{ marginTop: '24px' }}>
-                                How to use it
-                            </Typography>
-                            <Typography variant="body1" style={{ marginTop: '8px' }}>
-                                A meaningful personality profile can be created only where sufficient data of suitable
-                                quantity and quality is provided. Because language use varies naturally from document to
-                                document and from time to time, a small sample of text might not be representative of an
-                                individual's overall language patterns. You are limited with 20 MB of input content.
-                                Typically, the best results come at around 3000 words of input, and more content does
-                                not contribute to the accuracy of the profile. Ideally you would therefore want to send
-                                a sample text, such as your motivational letter, or any sort of a document indicative of
-                                your personal writing style, for further analysis.
-                            </Typography>
-                            <Typography variant="h5" style={{ marginTop: '24px' }}>
-                                File upload
-                            </Typography>
-                            <Typography variant="body1" style={{ marginTop: '12px' }}>
-                                Upload file by clicking the button below. Before the analysis begins, your document will
-                                be checked locally for appropriate size, number of words, etc.
-                            </Typography>
-                            <div style={{ marginTop: '24px' }}>
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    accept="text/plain"
-                                    style={{ display: 'none' }}
-                                    onChange={(event: ChangeEvent<HTMLInputElement>) => this.handleFileUpload(event)}
-                                />
-                                <label htmlFor="file-upload">
-                                    <Button style={{ background: '#094074', color: '#ffffff' }} component="span">
-                                        Upload file
-                                    </Button>
-                                </label>
+                        {this.state.isAnalysisComplete ? (
+                            <div style={{ marginBottom: '24px', marginRight: '24px' }}>
+                                <Typography variant="h5" style={{ marginTop: '24px' }}>
+                                    Results
+                                </Typography>
+                                <Typography variant="body1" style={{ marginTop: '12px' }}>
+                                    Below are analysis results for the given text file that you have uploaded. The
+                                    results come as a pair of trait name and percentile of traits' relevance, so for
+                                    example, <em>Sympathy: 0.7692102324310408</em> means person is approximately 77%
+                                    likely portraying 'Sympathy' trait in their writing.
+                                </Typography>
+                                <Typography variant="h6" style={{ marginTop: '12px' }}>
+                                    Personality
+                                </Typography>
+                                <Typography variant="body2">
+                                    {this.state.analysisResults?.personality.map((trait: TraitModel) => {
+                                        return (
+                                            <div style={{ marginTop: '8px' }}>
+                                                <b>
+                                                    {trait.name} ({trait.percentile})&nbsp;
+                                                </b>
+                                                <br />
+                                                {trait.children?.map((traitChild) => {
+                                                    return (
+                                                        <div>
+                                                            <span>
+                                                                {traitChild.name}: {traitChild.percentile}
+                                                            </span>
+                                                            <br />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    })}
+                                </Typography>
+                                <Typography variant="h6" style={{ marginTop: '12px' }}>
+                                    Needs
+                                </Typography>
+                                <Typography variant="body2">
+                                    {this.state.analysisResults?.needs.map((trait: TraitModel) => {
+                                        return (
+                                            <div>
+                                                <span>
+                                                    {trait.name}: {trait.percentile}
+                                                </span>
+                                                <br />
+                                            </div>
+                                        );
+                                    })}
+                                </Typography>
+                                <Typography variant="h6" style={{ marginTop: '12px' }}>
+                                    Values
+                                </Typography>
+                                <Typography variant="body2">
+                                    {this.state.analysisResults?.values.map((trait: TraitModel) => {
+                                        return (
+                                            <div>
+                                                <span>
+                                                    {trait.name}: {trait.percentile}
+                                                </span>
+                                                <br />
+                                            </div>
+                                        );
+                                    })}
+                                </Typography>
                             </div>
-                            {this.state.activeStepIndex === 1 ? (
-                                <div>
-                                    <div style={{ margin: '24px 0 16px 0' }}>
-                                        <CircularProgress />
+                        ) : (
+                            <div>
+                                <div style={{ marginRight: '24px' }}>
+                                    <Stepper activeStep={this.state.activeStepIndex} alternativeLabel>
+                                        {this.steps.map((label: string, index: number) => {
+                                            return (
+                                                <Step key={index}>
+                                                    <StepLabel>{label}</StepLabel>
+                                                </Step>
+                                            );
+                                        })}
+                                    </Stepper>
+                                    <Typography variant="h4" style={{ marginTop: '24px' }}>
+                                        Welcome!
+                                    </Typography>
+                                    <Typography variant="body1" style={{ marginTop: '12px' }}>
+                                        Welcome to <em>PSAnalyst</em>, a personality analysis tool that enables you to
+                                        gain personality insights into your writing using IBM Watson, a state-of-the-art
+                                        collection of AI tools ranging from image recognition, speech-to-text, to
+                                        natural language processing.
+                                    </Typography>
+                                    <Typography variant="body1" style={{ marginTop: '8px' }}>
+                                        Upload a text file below, which will be sent for processing. Currently, the only
+                                        file format that's acceptable is plain TXT, so please make sure you're uploading
+                                        proper file type beforehand.
+                                    </Typography>
+                                    <Typography variant="body1" style={{ marginTop: '8px' }}>
+                                        The application is in beta.
+                                    </Typography>
+                                    <Typography variant="h5" style={{ marginTop: '24px' }}>
+                                        How to use it
+                                    </Typography>
+                                    <Typography variant="body1" style={{ marginTop: '8px' }}>
+                                        A meaningful personality profile can be created only where sufficient data of
+                                        suitable quantity and quality is provided. Because language use varies naturally
+                                        from document to document and from time to time, a small sample of text might
+                                        not be representative of an individual's overall language patterns. You are
+                                        limited with 20 MB of input content. Typically, the best results come at around
+                                        3000 words of input, and more content does not contribute to the accuracy of the
+                                        profile. Ideally you would therefore want to send a sample text, such as your
+                                        motivational letter, or any sort of a document indicative of your personal
+                                        writing style, for further analysis.
+                                    </Typography>
+                                    <Typography variant="h5" style={{ marginTop: '24px' }}>
+                                        File upload
+                                    </Typography>
+                                    <Typography variant="body1" style={{ marginTop: '12px' }}>
+                                        Upload file by clicking the button below. Before the analysis begins, your
+                                        document will be checked locally for appropriate size, number of words, etc.
+                                    </Typography>
+                                    <div style={{ marginTop: '24px' }}>
+                                        <input
+                                            id="file-upload"
+                                            type="file"
+                                            accept="text/plain"
+                                            style={{ display: 'none' }}
+                                            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                                                this.handleFileUpload(event)
+                                            }
+                                        />
+                                        <label htmlFor="file-upload">
+                                            <Button
+                                                style={{ background: '#094074', color: '#ffffff' }}
+                                                component="span"
+                                            >
+                                                Upload file
+                                            </Button>
+                                        </label>
                                     </div>
-                                    <span>
-                                        Uploading file {this.state.file.fileName}, size (in bytes){' '}
-                                        {this.state.file.size}, which{' '}
-                                        {this.state.file.isAdequateForAnalysis
-                                            ? `will most likely produce good results (number of words: ${
-                                                  this.state.file.contents.split(' ').length
-                                              })`
-                                            : 'might not be able to produce sufficient memory profile (due to short length)'}
-                                    </span>
+                                    {this.state.activeStepIndex === 1 ? (
+                                        <div>
+                                            <div style={{ margin: '24px 0 16px 0' }}>
+                                                <CircularProgress />
+                                            </div>
+                                            <span>
+                                                Uploading file {this.state.file.fileName}, size (in bytes){' '}
+                                                {this.state.file.size}, which{' '}
+                                                {this.state.file.isAdequateForAnalysis
+                                                    ? `will most likely produce good results (number of words: ${
+                                                          this.state.file.contents.split(' ').length
+                                                      })`
+                                                    : 'might not be able to produce sufficient memory profile (due to short length)'}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div />
+                                    )}
                                 </div>
-                            ) : (
-                                <div />
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </Grid>
                 </Grid>
             </div>

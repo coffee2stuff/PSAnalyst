@@ -1,10 +1,12 @@
 import React, { ChangeEvent } from 'react';
 import './home.page.css';
-import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN } from '../../../utils';
+import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN, Pair } from '../../../utils';
 import { MainNavigationComponent, MenuListComponent } from '../../components';
 import { Grid, Stepper, Step, StepLabel, Typography, Button, CircularProgress } from '@material-ui/core';
 import { FirebaseRepo } from '../../../firebase/repositories';
 import { FileModel } from '../../../firebase/models';
+import { ProfileModel } from '../../../api/models';
+import { IBMInsightsLite } from '../../../api';
 
 interface HomePageProps {
     history: any;
@@ -13,6 +15,8 @@ interface HomePageProps {
 interface HomePageState {
     activeStepIndex: number;
     file: FileModel;
+    isAnalysisComplete: boolean;
+    analysisResults: ProfileModel | null;
 }
 
 export class HomePage extends React.Component<HomePageProps, HomePageState> {
@@ -28,7 +32,9 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
         super(props);
         this.state = {
             activeStepIndex: 0,
-            file: { userID: '', fileName: '', size: 0, isAdequateForAnalysis: false, contents: '' }
+            file: { userID: '', fileName: '', size: 0, isAdequateForAnalysis: false, contents: '' },
+            isAnalysisComplete: false,
+            analysisResults: null
         };
 
         this.handleNextStep = this.handleNextStep.bind(this);
@@ -162,8 +168,21 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
             if (documentID !== undefined) {
                 this.handleNextStep(this.state.activeStepIndex);
             }
+            await this.createRequest();
+            this.handleNextStep(this.state.activeStepIndex);
         }
     };
+
+    private async createRequest() {
+        const credentials: Pair<string, string> = this.repository.retrieveIBMCredentials();
+        const insights = new IBMInsightsLite(credentials.getFirst(), credentials.getSecond());
+        const results = await insights.createRequest(this.state.file.contents);
+        console.log(results);
+        this.setState({
+            isAnalysisComplete: true,
+            analysisResults: results
+        });
+    }
 
     private analyzeFileContents = (fileContents: string): boolean => {
         const length: number = fileContents.split(' ').length;

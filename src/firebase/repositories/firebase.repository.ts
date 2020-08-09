@@ -46,8 +46,8 @@ export class FirebaseRepo implements IFirebaseRepo {
 
     retrieveIBMCredentials(): Pair<string, string> {
         return new Pair<string, string>(
-            this.provider.fetchRemoteConfigParameter('ibm_access_token'),
-            this.provider.fetchRemoteConfigParameter('ibm_base_url')
+            this.provider.fetchRemoteConfigParameter('ibm_base_url'),
+            this.provider.fetchRemoteConfigParameter('ibm_access_token')
         );
     }
 

@@ -254,7 +254,6 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
         const credentials: Pair<string, string> = this.repository.retrieveIBMCredentials();
         const insights = new IBMInsightsLite(credentials.getFirst(), credentials.getSecond());
         const results = await insights.createRequest(this.state.file.contents);
-        console.log(results);
         this.setState({
             isAnalysisComplete: true,
             analysisResults: results
@@ -263,6 +262,6 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
 
     private analyzeFileContents = (fileContents: string): boolean => {
         const length: number = fileContents.split(' ').length;
-        return length >= 1200 && length <= 3000;
+        return length >= 1200;
     };
 }

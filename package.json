@@ -3,7 +3,7 @@
     "description": "Personality analyst application",
     "version": "0.0.1",
     "private": true,
-    "license": "UNLICENSED",
+    "license": "MIT",
     "scripts": {
         "format": "prettier --write \"src/**/*.{ts,tsx,css}\" --config .prettierrc",
         "start": "react-scripts start",

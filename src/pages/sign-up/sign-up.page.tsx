@@ -1,46 +1,52 @@
 import React from 'react';
-import './login.page.css';
+import './sign-up.page.css';
 
-import { Button, Grid, TextField, Link } from '@material-ui/core';
+import { Grid, TextField, Button } from '@material-ui/core';
 
-import { FirebaseRepo } from '../../../firebase';
-import { ROUTE_HOME, ROUTE_SIGN_UP } from '../../../utils';
+import { FirebaseRepo } from '../../firebase';
+import { ROUTE_HOME } from '../../utils';
 
-interface LoginPageProps {
+interface SignUpPageProps {
     history: any;
 }
 
-interface LoginPageState {
+interface SignUpPageState {
+    displayName: string;
     email: string;
     password: string;
 }
 
-export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
+export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState> {
     private readonly repository = new FirebaseRepo();
 
-    constructor(props: LoginPageProps) {
+    constructor(props: SignUpPageProps) {
         super(props);
         this.state = {
+            displayName: '',
             email: '',
             password: ''
         };
 
         this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
+        this.handleSignUp = this.handleSignUp.bind(this);
     }
 
     render() {
         return (
             <div>
                 <Grid container direction="column" alignItems="center" justify="center" style={{ minHeight: '100vh' }}>
-                    <Grid item xs={12}>
-                        <img
-                            src={require('../../../assets/app_icon.png')}
-                            alt="Application icon"
-                            className="login-page-icon"
-                        />
-                    </Grid>
                     <Grid item xs={3}>
+                        <TextField
+                            autoComplete="username"
+                            name="username"
+                            required
+                            fullWidth
+                            id="username"
+                            label="Display name"
+                            value={this.state.displayName}
+                            onChange={(event) => this.handleTextFieldChange('username', event)}
+                        />
+
                         <TextField
                             margin="normal"
                             required
@@ -49,7 +55,6 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                             label="Email Address"
                             name="email"
                             autoComplete="email"
-                            autoFocus
                             value={this.state.email}
                             onChange={(event) => this.handleTextFieldChange('email', event)}
                         />
@@ -71,15 +76,10 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
                             variant="contained"
                             color="primary"
                             className="login-page-button"
-                            onClick={this.handleLogin}
+                            onClick={this.handleSignUp}
                         >
-                            Sign In
+                            Create account
                         </Button>
-                    </Grid>
-                    <Grid item xs={12} className="login-page-link">
-                        <Link onClick={() => this.props.history.push(ROUTE_SIGN_UP)}>
-                            <span>No account? Create one</span>
-                        </Link>
                     </Grid>
                 </Grid>
             </div>
@@ -89,6 +89,10 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     private handleTextFieldChange(field: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const eventValue: string = event.target.value;
         switch (field) {
+            case 'username': {
+                this.setState({ displayName: eventValue });
+                break;
+            }
             case 'email': {
                 this.setState({ email: eventValue });
                 break;
@@ -103,8 +107,12 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
         }
     }
 
-    private async handleLogin() {
-        const result: boolean = await this.repository.performLogin(this.state.email, this.state.password);
-        result ? this.props.history.push(ROUTE_HOME) : alert('Authentication error');
+    private async handleSignUp() {
+        const result: boolean = await this.repository.createNewAccount(
+            this.state.displayName,
+            this.state.email,
+            this.state.password
+        );
+        result ? this.props.history.push(ROUTE_HOME) : alert('Sign up error');
     }
 }

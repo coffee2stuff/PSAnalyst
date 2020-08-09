@@ -1,53 +1,46 @@
 import React from 'react';
-import './sign-up.page.css';
+import './login.page.css';
 
-import { Grid, TextField, Button } from '@material-ui/core';
+import { Button, Grid, TextField, Link } from '@material-ui/core';
 
-import { FirebaseRepo } from '../../../firebase';
-import { ROUTE_HOME } from '../../../utils';
+import { FirebaseRepo } from '../../firebase';
+import { ROUTE_HOME, ROUTE_SIGN_UP } from '../../utils';
 
-interface SignUpPageProps {
+interface LoginPageProps {
     history: any;
 }
 
-interface SignUpPageState {
-    displayName: string;
+interface LoginPageState {
     email: string;
     password: string;
 }
 
-export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState> {
+export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     private readonly repository = new FirebaseRepo();
 
-    constructor(props: SignUpPageProps) {
+    constructor(props: LoginPageProps) {
         super(props);
         this.state = {
-            displayName: '',
             email: '',
             password: ''
         };
 
         this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
-        this.handleSignUp = this.handleSignUp.bind(this);
+        this.handleLogin = this.handleLogin.bind(this);
     }
 
     render() {
         return (
             <div>
                 <Grid container direction="column" alignItems="center" justify="center" style={{ minHeight: '100vh' }}>
-                    <Grid item xs={3}>
-                        <TextField
-                            autoComplete="username"
-                            name="username"
-                            required
-                            fullWidth
-                            id="username"
-                            label="Display name"
-                            autoFocus
-                            value={this.state.displayName}
-                            onChange={(event) => this.handleTextFieldChange('username', event)}
+                    <Grid item xs={12}>
+                        <img
+                            src={require('../../assets/app_icon.png')}
+                            alt="Application icon"
+                            className="login-page-icon"
                         />
-
+                    </Grid>
+                    <Grid item xs={3}>
                         <TextField
                             margin="normal"
                             required
@@ -56,7 +49,6 @@ export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState
                             label="Email Address"
                             name="email"
                             autoComplete="email"
-                            autoFocus
                             value={this.state.email}
                             onChange={(event) => this.handleTextFieldChange('email', event)}
                         />
@@ -78,10 +70,15 @@ export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState
                             variant="contained"
                             color="primary"
                             className="login-page-button"
-                            onClick={this.handleSignUp}
+                            onClick={this.handleLogin}
                         >
-                            Create account
+                            Sign In
                         </Button>
+                    </Grid>
+                    <Grid item xs={12} className="login-page-link">
+                        <Link onClick={() => this.props.history.push(ROUTE_SIGN_UP)}>
+                            <span>No account? Create one</span>
+                        </Link>
                     </Grid>
                 </Grid>
             </div>
@@ -91,10 +88,6 @@ export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState
     private handleTextFieldChange(field: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const eventValue: string = event.target.value;
         switch (field) {
-            case 'username': {
-                this.setState({ displayName: eventValue });
-                break;
-            }
             case 'email': {
                 this.setState({ email: eventValue });
                 break;
@@ -109,12 +102,8 @@ export class SignUpPage extends React.Component<SignUpPageProps, SignUpPageState
         }
     }
 
-    private async handleSignUp() {
-        const result: boolean = await this.repository.createNewAccount(
-            this.state.displayName,
-            this.state.email,
-            this.state.password
-        );
-        result ? this.props.history.push(ROUTE_HOME) : alert('Sign up error');
+    private async handleLogin() {
+        const result: boolean = await this.repository.performLogin(this.state.email, this.state.password);
+        result ? this.props.history.push(ROUTE_HOME) : alert('Authentication error');
     }
 }

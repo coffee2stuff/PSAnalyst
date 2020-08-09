@@ -1,12 +1,22 @@
 import React, { ChangeEvent } from 'react';
-import './home.page.css';
-import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN, Pair } from '../../../utils';
-import { MainNavigationComponent, MenuListComponent } from '../../components';
-import { Grid, Stepper, Step, StepLabel, Typography, Button, CircularProgress } from '@material-ui/core';
-import { FirebaseRepo } from '../../../firebase/repositories';
-import { FileModel } from '../../../firebase/models';
-import { ProfileModel, TraitModel } from '../../../api/models';
-import { IBMInsightsLite } from '../../../api';
+import { retrieveFromLocalStorage, ACCESS_TOKEN, ROUTE_LOGIN, Pair } from '../../utils';
+import {
+    Grid,
+    Stepper,
+    Step,
+    StepLabel,
+    Typography,
+    Button,
+    CircularProgress,
+    CssBaseline,
+    AppBar,
+    Toolbar
+} from '@material-ui/core';
+
+import { FirebaseRepo } from '../../firebase/repositories';
+import { FileModel } from '../../firebase/models';
+import { ProfileModel, TraitModel } from '../../api/models';
+import { IBMInsightsLite } from '../../api';
 
 interface HomePageProps {
     history: any;
@@ -49,7 +59,16 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
     render() {
         return (
             <div>
-                <MainNavigationComponent />
+                <div style={{ display: 'flex' }}>
+                    <CssBaseline />
+                    <AppBar position="fixed">
+                        <Toolbar>
+                            <Typography variant="h6" noWrap>
+                                PSAnalyst: Personality Analyst (Beta)
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                </div>
                 <Grid
                     container
                     spacing={0}
@@ -58,9 +77,6 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
                     justify="center"
                     style={{ minHeight: '100vh', paddingTop: '80px' }}
                 >
-                    <Grid item xs={3}>
-                        <MenuListComponent />
-                    </Grid>
                     <Grid item xs={9}>
                         {this.state.isAnalysisComplete ? (
                             <div style={{ marginBottom: '24px', marginRight: '24px' }}>

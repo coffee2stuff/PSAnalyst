@@ -2,7 +2,7 @@ import React from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
-import { HomePage, LoginPage, SignUpPage } from './ui/pages';
+import { HomePage, LoginPage, SignUpPage } from './pages';
 
 import history from './utils/history';
 import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_SIGN_UP } from './utils';

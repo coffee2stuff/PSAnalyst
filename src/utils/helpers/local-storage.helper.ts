@@ -7,11 +7,3 @@ export function persistLocalStorage(key: string, value: string) {
 export function retrieveFromLocalStorage(key: string): string | null {
     return localStorage.getItem(key);
 }
-
-export function clearLocalStorageItem(key: string) {
-    localStorage.removeItem(key);
-}
-
-export function clearLocalStorage() {
-    localStorage.clear();
-}
